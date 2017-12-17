@@ -12,7 +12,11 @@ router.get('/register', function(req, res){
 
 // Login
 router.get('/login', function(req, res){
-	res.render('login');
+    res.render('login');
+});
+
+router.get('users/login', function(req, res){
+    res.render('index');
 });
 
 // Register User
@@ -20,8 +24,8 @@ router.post('/register', function(req, res){
 	var name = req.body.name;
 	var email = req.body.email;
 	var username = req.body.username;
-	var password = req.body.password;
-	var password2 = req.body.password2;
+    var password = req.body.password;
+    var password2 = req.body.password2;
 
 	// Validation
 	req.checkBody('name', 'Name is required').notEmpty();
@@ -86,10 +90,25 @@ passport.deserializeUser(function(id, done) {
 });
 
 router.post('/login',
-  passport.authenticate('local', {successRedirect:'/', failureRedirect:'/users/login',failureFlash: true}),
+  passport.authenticate('local', {
+    successRedirect:'/',
+    failureRedirect:'/users/login',
+    failureFlash: true
+    }),
   function(req, res) {
     res.redirect('/');
   });
+
+// router.post('/login', function(req, res, next) {
+//   passport.authenticate('local', function(err, user, info) {
+//     if (err) { return next(err); }
+//     if (!user) { return res.redirect('/login'); }
+//     req.logIn(user, function(err) {
+//       if (err) { return next(err); }
+//       return res.redirect('/');
+//     });
+//   })(req, res, next);
+// });
 
 router.get('/logout', function(req, res){
 	req.logout();

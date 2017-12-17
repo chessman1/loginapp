@@ -1,17 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="myShoppingList">
 <head>
 	<title>LoginApp</title>
 	<link rel="stylesheet" href="/css/bootstrap.css" />
 	<link rel="stylesheet" href="/css/style.css" />
+<script src="/js/angular.js"></script>
+<script src="/js/angular-route.js"></script>
+<script src="/js/main.js"></script>
 </head>
 <body>
+
+
+  <!-- banner with divs and arrows -->
 	<div class="container">
       <div class="header clearfix">
         <nav>
           <ul class="nav nav-pills pull-right">
-            {{#if user}}
-              <li role="presentation"><a href="/">Dashboard</a></li>
+              {{#if user}}
+              <h4>Hello, <span style="color:orange">{{user.username}}</span>!</h4>
+              <li role="presentation"><a href="/">Dashboard</a></li> <!-- ARIA 
+              rich internet applications
+
+                 Single-Page Applications -->
               <li role="presentation"><a href="/users/logout">Logout</a></li>
             {{else}}
               <li role="presentation"><a href="/users/login">Login</a></li>
@@ -19,7 +29,6 @@
             {{/if}}
           </ul>
         </nav>
-        <h3 class="text-muted">LoginApp</h3>
       </div>
 
 
@@ -42,10 +51,6 @@
 
         
       </div>
-
-      <footer class="footer">
-        <p>&copy; 2015 LoginApp, Inc.</p>
-      </footer>
 
     </div> <!-- /container -->
 </body>

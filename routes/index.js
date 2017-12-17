@@ -6,6 +6,7 @@ router.get('/', ensureAuthenticated, function(req, res){
 	res.render('index');
 });
 
+//check if username is already used 
 function ensureAuthenticated(req, res, next){
 	if(req.isAuthenticated()){
 		return next();

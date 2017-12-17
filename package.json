@@ -20,7 +20,7 @@
     "express-session": "*",
     "express-validator": "*",
     "mongodb": "*",
-    "mongoose": "*",
+    "mongoose": "^4.13.6",
     "passport": "*",
     "passport-http": "*",
     "passport-local": "*"
