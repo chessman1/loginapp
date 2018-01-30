@@ -1,17 +1,5 @@
 var app = angular.module("myShoppingList", ["ngRoute"]); 
 
-// app.config(function($routeProvider) {
-//     $routeProvider
-//         .when("/", {
-//             templateUrl: "home.html",
-//             controller: "mainController"
-//         })
-
-//         .when("/calculator", {
-//             templateUrl: "calculator.html",
-//             controller : "calculatorController"
-//         })
-// });
 
 //sort products
 //drag and drop
@@ -45,7 +33,19 @@ app.controller("calculatorController", function($scope) {
             $scope.showErr = true;
         } 
     }
-})
+
+});
+
+app.controller("productsController", function($scope) {
+    //calculating the price
+    $scope.calculate = function  () {
+        if($scope.quantity && $scope.price) {
+            return parseFloat($scope.quantity) * parseFloat($scope.price);
+        } else {
+            return "";
+        }
+    }
+});
 
 
 

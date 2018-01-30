@@ -7,6 +7,8 @@ router.get('/', ensureAuthenticated, function(req, res){
 });
 
 //check if username is already used 
+//not completed
+
 function ensureAuthenticated(req, res, next){
 	if(req.isAuthenticated()){
 		return next();

@@ -10,6 +10,10 @@ router.get('/register', function(req, res){
 	res.render('register');
 });
 
+router.get('/basket', function(req, res){
+    res.render('basket');
+});
+
 // Login
 router.get('/login', function(req, res){
     res.render('login');
@@ -18,6 +22,7 @@ router.get('/login', function(req, res){
 router.get('users/login', function(req, res){
     res.render('index');
 });
+
 
 // Register User
 router.post('/register', function(req, res){
@@ -44,7 +49,7 @@ router.post('/register', function(req, res){
 	} else {
 		var newUser = new User({
 			name: name,
-			email:email,
+			email: email,
 			username: username,
 			password: password
 		});
@@ -98,17 +103,6 @@ router.post('/login',
   function(req, res) {
     res.redirect('/');
   });
-
-// router.post('/login', function(req, res, next) {
-//   passport.authenticate('local', function(err, user, info) {
-//     if (err) { return next(err); }
-//     if (!user) { return res.redirect('/login'); }
-//     req.logIn(user, function(err) {
-//       if (err) { return next(err); }
-//       return res.redirect('/');
-//     });
-//   })(req, res, next);
-// });
 
 router.get('/logout', function(req, res){
 	req.logout();

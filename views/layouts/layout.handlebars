@@ -7,9 +7,9 @@
 <script src="/js/angular.js"></script>
 <script src="/js/angular-route.js"></script>
 <script src="/js/main.js"></script>
+<script src="/js/handlebars.js"></script>
 </head>
 <body>
-
 
   <!-- banner with divs and arrows -->
 	<div class="container">
@@ -17,11 +17,12 @@
         <nav>
           <ul class="nav nav-pills pull-right">
               {{#if user}}
-              <h4>Hello, <span style="color:orange">{{user.username}}</span>!</h4>
-              <li role="presentation"><a href="/">Dashboard</a></li> <!-- ARIA 
-              rich internet applications
 
-                 Single-Page Applications -->
+              <!-- pic upload -->
+              <h4>Hello, <span style="color:orange">{{user.name}}</span>!</h4>
+              <li role="presentation"><a href="/users/basket">Basket</a></li> 
+              <li role="presentation"><a href="/">Dashboard</a></li> 
+
               <li role="presentation"><a href="/users/logout">Logout</a></li>
             {{else}}
               <li role="presentation"><a href="/users/login">Login</a></li>
@@ -30,8 +31,7 @@
           </ul>
         </nav>
       </div>
-
-
+<!-- generate with handlebars articles; dobavqne na recepti-->
       <div class="row">
         <div class="col-lg-12">
           {{#if success_msg}}
@@ -52,6 +52,6 @@
         
       </div>
 
-    </div> <!-- /container -->
+    </div> 
 </body>
 </html>
