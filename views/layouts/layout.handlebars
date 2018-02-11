@@ -1,37 +1,35 @@
 <!DOCTYPE html>
-<html ng-app="myShoppingList">
+
+<html>
 <head>
 	<title>LoginApp</title>
 	<link rel="stylesheet" href="/css/bootstrap.css" />
-	<link rel="stylesheet" href="/css/style.css" />
-<script src="/js/angular.js"></script>
-<script src="/js/angular-route.js"></script>
-<script src="/js/main.js"></script>
 <script src="/js/handlebars.js"></script>
 </head>
 <body>
 
-  <!-- banner with divs and arrows -->
+
 	<div class="container">
       <div class="header clearfix">
         <nav>
           <ul class="nav nav-pills pull-right">
               {{#if user}}
 
-              <!-- pic upload -->
-              <h4>Hello, <span style="color:orange">{{user.name}}</span>!</h4>
-              <li role="presentation"><a href="/users/basket">Basket</a></li> 
-              <li role="presentation"><a href="/">Dashboard</a></li> 
+              <h4>Your email is: <span style="color:orange">{{user.email}}</span>!</h4>
 
+              <li role="presentation"><a href="/">Dashboard</a></li> 
               <li role="presentation"><a href="/users/logout">Logout</a></li>
             {{else}}
               <li role="presentation"><a href="/users/login">Login</a></li>
               <li role="presentation"><a href="/users/register">Register</a></li>
-            {{/if}}
+              <li role="presentation"><a href="/auth/facebook">Login with FB</a></li>
+              
+
+             {{/if}}
           </ul>
         </nav>
       </div>
-<!-- generate with handlebars articles; dobavqne na recepti-->
+
       <div class="row">
         <div class="col-lg-12">
           {{#if success_msg}}

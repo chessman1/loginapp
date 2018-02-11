@@ -1,16 +1,13 @@
 {
   "name": "loginapp",
   "version": "1.0.0",
-  "description": "Simple authentication system",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js"
   },
-  "author": "Brad Traversy",
   "license": "ISC",
   "dependencies": {
-    "bcryptjs": "*",
+    "bcryptjs": "^2.4.3",
     "body-parser": "*",
     "connect-flash": "*",
     "cookie-parser": "^1.4.1",
@@ -22,6 +19,7 @@
     "mongodb": "*",
     "mongoose": "^4.13.6",
     "passport": "*",
+    "passport-facebook": "^2.1.1",
     "passport-http": "*",
     "passport-local": "*"
   }

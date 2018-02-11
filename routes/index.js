@@ -1,19 +1,24 @@
 var express = require('express');
 var router = express.Router();
+var passport = require("passport");
 
 // Get Homepage
 router.get('/', ensureAuthenticated, function(req, res){
-	res.render('index');
+    res.render('index');
 });
 
-//check if username is already used 
-//not completed
+//FB routes
+router.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email']}));
+
+router.get('/auth/facebook/callback', 
+      passport.authenticate('facebook', { successRedirect: '/',
+                                          failureRedirect: 'users/login' }));
+
 
 function ensureAuthenticated(req, res, next){
 	if(req.isAuthenticated()){
 		return next();
 	} else {
-		//req.flash('error_msg','You are not logged in');
 		res.redirect('/users/login');
 	}
 }

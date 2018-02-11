@@ -2,6 +2,9 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var FacebookStrategy = require('passport-facebook').Strategy;
+var FACEBOOK_APP_ID = '162806701032642';
+var FACEBOOK_APP_SECRET = '7365159e1cff7f5cccbb98d30e6cb6be';
 
 var User = require('../models/user');
 
@@ -10,33 +13,20 @@ router.get('/register', function(req, res){
 	res.render('register');
 });
 
-router.get('/basket', function(req, res){
-    res.render('basket');
-});
-
 // Login
 router.get('/login', function(req, res){
     res.render('login');
 });
 
-router.get('users/login', function(req, res){
-    res.render('index');
-});
-
-
-// Register User
+// user data
 router.post('/register', function(req, res){
-	var name = req.body.name;
 	var email = req.body.email;
-	var username = req.body.username;
-    var password = req.body.password;
-    var password2 = req.body.password2;
+  var password = req.body.password;
+  var password2 = req.body.password2;
 
-	// Validation
-	req.checkBody('name', 'Name is required').notEmpty();
+	// validate user inputs
 	req.checkBody('email', 'Email is required').notEmpty();
 	req.checkBody('email', 'Email is not valid').isEmail();
-	req.checkBody('username', 'Username is required').notEmpty();
 	req.checkBody('password', 'Password is required').notEmpty();
 	req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
 
@@ -48,9 +38,7 @@ router.post('/register', function(req, res){
 		});
 	} else {
 		var newUser = new User({
-			name: name,
 			email: email,
-			username: username,
 			password: password
 		});
 
@@ -59,15 +47,16 @@ router.post('/register', function(req, res){
 			console.log(user);
 		});
 
-		req.flash('success_msg', 'You are registered and can now login');
-
 		res.redirect('/users/login');
 	}
 });
 
-passport.use(new LocalStrategy(
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+  },
   function(username, password, done) {
-   User.getUserByUsername(username, function(err, user){
+   User.findOne({email:username}, function(err, user){
    	if(err) throw err;
    	if(!user){
    		return done(null, false, {message: 'Unknown User'});
@@ -83,6 +72,50 @@ passport.use(new LocalStrategy(
    	});
    });
   }));
+
+//FB strategy
+passport.use(new FacebookStrategy({
+    clientID        : FACEBOOK_APP_ID,
+    clientSecret    : FACEBOOK_APP_SECRET,
+    callbackURL    : 'http://localhost:8080/auth/facebook/callback',
+    profileFields: ['id', 'emails', 'name'] 
+},
+function (accessToken, refreshToken, profile, done) {
+    process.nextTick(function(){
+          User.findOne({'facebook.id': profile.id}, function(err, user){
+            if(err)
+              return done(err);
+            if(user)
+              return done(null, user);
+            else {
+              var newUser = new User();
+              newUser.facebook.id = profile.id;
+              newUser.facebook.token = accessToken;
+              newUser.facebook.name = profile.name.givenName + ' ' + profile.name.familyName;
+              newUser.facebook.email = profile.emails[0].value;
+
+              newUser.save(function(err){
+                if(err)
+                  throw err;
+                return done(null, newUser);
+              })
+              console.log(profile);
+            }
+          });
+})
+}));
+
+//routes for FB login
+router.get('/auth/facebook', passport.authenticate('facebook', { scope : ["email"] }));
+
+router.get('/auth/facebook/callback',
+passport.authenticate('facebook', {
+failureRedirect: 'users/login'
+}),
+function(req, res) {
+res.redirect('/');
+}
+);
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);
@@ -103,6 +136,24 @@ router.post('/login',
   function(req, res) {
     res.redirect('/');
   });
+
+router.post('/changepass', function(req, res){
+  var newpasswd = req.body.newpasswd;
+  var newpasswd2 = req.body.newpasswd2;
+
+  // validate user inputs
+ 
+  req.checkBody('password2', 'Passwords do not match').equals(req.body.newpasswd2);
+
+  //userschema function
+  
+
+    res.redirect('/users/changepass');
+  }
+
+});
+
+
 
 router.get('/logout', function(req, res){
 	req.logout();

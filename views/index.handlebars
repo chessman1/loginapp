@@ -1,40 +1,20 @@
 
-<div ng-controller="calculatorController">
-   <div class="container">
-      <div class="row">
-         <div class="col-md-2 col-md-offset-5">
-            <div id="menu"
-            <ul class="list-group" style="width:120px;">
-               <li class="list-group-item" ng-repeat="x in products">
-                  \{{x}} 
-                  <span ng-click="removeItem($index)" style="cursor:pointer;">
-                  <img src="/images/delete.png" style="width:23px;height:23px;" 
-                     alt="delete product" />
-                  </span>
-               </li>
-            </ul>
-        </div>
-        </div>
-    </div>
-            
-        <div class="row">
-            <div id="form">
-               <label for="usr">Add a product:</label>
-               <input class="form-control" type="text" id="usr" ng-model="product" 
-                  style="width:120px;"/>
-            
-            <input class="btn btn-primary" type="button" value="Add a product"
-               ng-click="addItem()" />
-            <div class="alert alert-warning" ng-show="showErr">
-               <strong>\{{errortext}}</strong>
-            </div>
-        </div>
-        </div>
-         </div>
+<form method="post" action="/users/changepass">
 
-      </div>
+  <div class="form-group">
+    <label>Type your old password</label>
+    <input type="password" class="form-control" placeholder="Old password" name="oldpasswd">
+  </div>
 
-</html>
+  <div class="form-group">
+    <label>Type your new password</label>
+    <input type="password" class="form-control" placeholder="New password" name="newpasswd">
+  </div>
 
-
- 
+  <div class="form-group">
+    <label>Confirm your new password</label>
+    <input type="password" class="form-control" placeholder="Confirm new password" name="newpasswd2">
+  </div>
+  
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
