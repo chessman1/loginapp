@@ -77,13 +77,13 @@ app.use(function (req, res, next) {
 app.use('/', routes);
 app.use('/users', users);
 
-// Set Port
-app.set('port', 8080);
+
+
 
 
 //the console message 
-app.listen(app.get('port'), function(){
-	console.log('Server started on port ' + app.get('port'));
+app.listen(process.env.PORT || 8080, function(){
+	console.log('Server started on port ' + 8080);
 });
 
 
