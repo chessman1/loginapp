@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
+var async = require('async');
+var crypto = require('crypto');
+var nodemailer = require('nodemailer');
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var FACEBOOK_APP_ID = '162806701032642';
@@ -16,6 +19,15 @@ router.get('/register', function(req, res){
 // Login
 router.get('/login', function(req, res){
     res.render('login');
+});
+
+
+router.get('/reset', function(req, res){
+    res.render('reset');
+});
+
+router.get('/forgot', function(req, res){
+    res.render('forgot');
 });
 
 // user data
@@ -137,22 +149,70 @@ router.post('/login',
     res.redirect('/');
   });
 
-router.post('/changepass', function(req, res){
-  var newpasswd = req.body.newpasswd;
-  var newpasswd2 = req.body.newpasswd2;
+router.post('/', function (req, res) {
+   async.waterfall([
+    function(done) {
+      crypto.randomBytes(20, function(err, buf) {
+        var token = buf.toString('hex');
+        done(err, token);
+      });
+    },
+    function(token, done) {
+      User.findOne({ email: req.body.email }, function(err, user) {
+        if (!user) {
+          req.flash('error', 'No account with that email address exists.');
+          return res.redirect('users/forgot');
+        }
 
-  // validate user inputs
- 
-  req.checkBody('password2', 'Passwords do not match').equals(req.body.newpasswd2);
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
 
-  //userschema function
-  
-
-    res.redirect('/users/changepass');
-  }
-
+        user.save(function(err) {
+          done(err, token, user);
+        });
+      });
+    },
+    function(token, user, done) {
+    var smtpTransport = nodemailer.createTransport({
+      service: 'Gmail', 
+      auth: {
+        xoauth2: xoauth2.createXOAuth2Generator({
+        user: 'kylevantil14@gmail.com',
+       
+     })
+      }
+    });
+      var mailOptions = {
+        to: user.email,
+        from: 'passwordreset@demo.com',
+        subject: 'Node.js Password Reset',
+        text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+          'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+          'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+          'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+      };
+      smtpTransport.sendMail(mailOptions, function(err) {
+        req.flash('info', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+        done(err, 'done');
+      });
+    }
+  ], function(err) {
+    if (err) return next(err);
+    res.redirect('/forgot');
+  });
 });
-
+ 
+router.post('/reset', function (req, res) {
+    
+    
+    var password = req.body.password;
+    var confirm = req.body.confirm;
+    if (password !== confirm) return res.end('passwords do not match');
+    
+    // update the user db here 
+   
+    res.end('password reset');
+});
 
 
 router.get('/logout', function(req, res){

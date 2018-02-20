@@ -1,5 +1,6 @@
 var express = require('express');
 var path = require('path');
+var fs = require('fs');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var exphbs = require('express-handlebars');
@@ -10,6 +11,7 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
+
 
 mongoose.connect('mongodb://localhost/loginapp', { useMongoClient: true });
 var db = mongoose.connection;

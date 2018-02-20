@@ -4,7 +4,7 @@ var passport = require("passport");
 
 // Get Homepage
 router.get('/', ensureAuthenticated, function(req, res){
-    res.render('index');
+    res.render('forgot');
 });
 
 //FB routes
