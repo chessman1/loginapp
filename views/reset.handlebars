@@ -1,4 +1,11 @@
-<form method="post" action="/users/reset">
+{{#if errors}}
+      {{#each errors}}
+        <div class="alert alert-danger">{{msg}}</div>
+      {{/each}}
+{{/if}}
+
+
+<form method="post">
   <div>
     new password
   </div>
@@ -6,17 +13,17 @@
   <div>
     <input type="password" name="password">
   </div>
-      
+
   <div>
     confirm password
   </div>
-      
-  <div>
-    <input type="password" name="confirm">
+
+   <div>
+    <input type="password" name="password2">
   </div>
       
   <div>
-    <input type="submit" value="reset password">
+    <input type="submit" value="update password">
   </div>
 
 </form>

@@ -4,20 +4,21 @@
 <head>
 	<title>LoginApp</title>
 	<link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/main.css" />
 <script src="/js/handlebars.js"></script>
 </head>
 <body>
 
 
 	<div class="container">
+  
       <div class="header clearfix">
         <nav>
           <ul class="nav nav-pills pull-right">
               {{#if user}}
-
-              <h4>Your email is: <span style="color:orange">{{user.email}}</span>!</h4>
-
-              <li role="presentation"><a href="/">Dashboard</a></li> 
+      
+            
+              <li role="presentation"><a href="/users/homepage">Homepage</a></li>
               <li role="presentation"><a href="/users/reset">New password</a></li> 
               <li role="presentation"><a href="/users/logout">Logout</a></li>
             {{else}}
@@ -30,6 +31,8 @@
           </ul>
         </nav>
       </div>
+
+
 
       <div class="row">
         <div class="col-lg-12">

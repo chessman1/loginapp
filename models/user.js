@@ -16,26 +16,46 @@ var UserSchema = mongoose.Schema({
 	password: {
 		type: String
 	},
+	picture: {
+		type: String
+	},
 	facebook : {
 		id: String,
 		token: String,
 		email: String,
 		name: String
-	}
+	},
+	resetPasswordToken: {
+		type: String
+	},
+  	resetPasswordExpires: {
+  		type: Date
+  	}
 });
 
-//schema method
+UserSchema.pre('save', function(next) {
+    var user = this;
+    var SALT_FACTOR = 5;
+
+    if(!user.isModified('password')){
+        return next();
+    }
+
+    bcrypt.genSalt(SALT_FACTOR, function(err, salt) {
+        if(err){
+            return next(err);
+        }
+        bcrypt.hash(user.password, salt, function(err, hash) {
+            if(err){
+                return next(err);
+            }
+            user.password = hash;
+            next();
+        });
+    });
+});
 
 var User = module.exports = mongoose.model('User', UserSchema);
-
-module.exports.createUser = function(newUser, callback){
-	bcrypt.genSalt(10, function(err, salt) {
-	    bcrypt.hash(newUser.password, salt, function(err, hash) {
-	        newUser.password = hash;
-	        newUser.save(callback);
-	    });
-	});
-}
 
 module.exports.getUserByUsername = function(username, callback){
 	var query = {username: username};
@@ -52,3 +72,5 @@ module.exports.comparePassword = function(candidatePassword, hash, callback){
     	callback(null, isMatch);
 	});
 }
+
+

@@ -12,7 +12,6 @@ var LocalStrategy = require('passport-local').Strategy;
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
 
-
 mongoose.connect('mongodb://localhost/loginapp', { useMongoClient: true });
 var db = mongoose.connection;
 
@@ -23,6 +22,7 @@ var users = require('./routes/users');
 var app = express();
 
 // set view engine
+
 app.set('views', path.join(__dirname, 'views'));
 app.engine('handlebars', exphbs({defaultLayout:'layout'}));
 app.set('view engine', 'handlebars');
@@ -68,6 +68,7 @@ app.use(flash());
 // Global Vars
 app.use(function (req, res, next) {
   res.locals.success_msg = req.flash('success_msg');
+  res.locals.info_msg = req.flash('info_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
   res.locals.user = req.user || null;
@@ -78,10 +79,9 @@ app.use('/', routes);
 app.use('/users', users);
 
 
+//the console message; we add process.env.PORT 
+//in case we want to deploy the app in Heroku f.e.
 
-
-
-//the console message 
 app.listen(process.env.PORT || 8080, function(){
 	console.log('Server started on port ' + 8080);
 });

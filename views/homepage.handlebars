@@ -1,0 +1,27 @@
+
+
+
+<h1>HOMEPAGE</h1>
+
+
+
+
+
+<form method="post" action="/users/profile" enctype="multipart/form-data">
+
+  <div class="form-group">
+    <label>Profile picture</label>
+    <input type="file" name="pic" />
+  </div>
+
+  <div class="form-group">
+    <input type="submit" value="Upload" />
+  </div>
+
+</form>
+
+<img id="profile" src="/uploads/{{user.picture}}" 
+height="150" width="150" alt="profile pic" />
+
+
+

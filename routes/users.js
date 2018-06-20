@@ -2,14 +2,45 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var async = require('async');
+var mime = require('mime');
 var crypto = require('crypto');
+var multer  = require('multer');
+var storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+      cb(null, 'public/uploads')
+  },
+  filename: function(req, file, cb) {
+      crypto.pseudoRandomBytes(16, function(err, raw) {
+          cb(null, raw.toString('hex') + '.' + mime.getExtension(file.mimetype));
+      });
+    }
+});
+
+var upload = multer({
+  storage: storage
+});
+
 var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var FACEBOOK_APP_ID = '162806701032642';
 var FACEBOOK_APP_SECRET = '7365159e1cff7f5cccbb98d30e6cb6be';
 
 var User = require('../models/user');
+
+
+
+//no address some page not found with picture
+
+
+// Get Homepage
+
+
+//Homepage
+router.get('/homepage', ensureAuthenticated, function(req,res) { 
+  res.render('homepage');
+});
 
 // Register
 router.get('/register', function(req, res){
@@ -21,20 +52,23 @@ router.get('/login', function(req, res){
     res.render('login');
 });
 
-
-router.get('/reset', function(req, res){
-    res.render('reset');
+router.get('/forgot', function(req, res) {
+  res.render('forgot');
 });
 
-router.get('/forgot', function(req, res){
-    res.render('forgot');
+//Reset
+router.get('/reset', ensureAuthenticated, function(req, res) {
+  res.render('reset');
 });
+
 
 // user data
+
 router.post('/register', function(req, res){
 	var email = req.body.email;
   var password = req.body.password;
   var password2 = req.body.password2;
+  //procent complete profile
 
 	// validate user inputs
 	req.checkBody('email', 'Email is required').notEmpty();
@@ -49,17 +83,18 @@ router.post('/register', function(req, res){
 			errors:errors
 		});
 	} else {
-		var newUser = new User({
+  
+		var user = new User({
 			email: email,
-			password: password
+			password: password,
 		});
 
-		User.createUser(newUser, function(err, user){
-			if(err) throw err;
-			console.log(user);
-		});
 
-		res.redirect('/users/login');
+		user.save(function(err) {
+    req.logIn(user, function(err) {
+      res.redirect('/');
+    });
+  });
 	}
 });
 
@@ -74,7 +109,7 @@ passport.use(new LocalStrategy({
    		return done(null, false, {message: 'Unknown User'});
    	}
 
-   	User.comparePassword(password, user.password, function(err, isMatch){
+   User.comparePassword(password, user.password, function(err, isMatch){
    		if(err) throw err;
    		if(isMatch){
    			return done(null, user);
@@ -149,7 +184,7 @@ router.post('/login',
     res.redirect('/');
   });
 
-router.post('/', function (req, res) {
+router.post('/', function (req, res, next) {
    async.waterfall([
     function(done) {
       crypto.randomBytes(20, function(err, buf) {
@@ -165,7 +200,7 @@ router.post('/', function (req, res) {
         }
 
         user.resetPasswordToken = token;
-        user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+        user.resetPasswordExpires = Date.now() + 3600000; // 1 hours
 
         user.save(function(err) {
           done(err, token, user);
@@ -173,52 +208,134 @@ router.post('/', function (req, res) {
       });
     },
     function(token, user, done) {
-    var smtpTransport = nodemailer.createTransport({
-      service: 'Gmail', 
+
+    var transport = nodemailer.createTransport({
+      service: 'gmail',
       auth: {
-        xoauth2: xoauth2.createXOAuth2Generator({
-        user: 'kylevantil14@gmail.com',
-       
-     })
+        user: 'chesslebron1@gmail.com',
+        pass: 'trewq123'               //plain 
       }
     });
-      var mailOptions = {
+    
+    var mailOptions = {
         to: user.email,
         from: 'passwordreset@demo.com',
         subject: 'Node.js Password Reset',
         text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
           'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-          'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+          'http://' + req.headers.host + '/users/reset/' + token + '\n\n' +
           'If you did not request this, please ignore this email and your password will remain unchanged.\n'
       };
-      smtpTransport.sendMail(mailOptions, function(err) {
-        req.flash('info', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+
+      transport.sendMail(mailOptions, function(err) {
+        req.flash('success_msg', 'An e-mail has been sent to ' + user.email +' with further instructions.');
         done(err, 'done');
       });
     }
-  ], function(err) {
+  ], function(err) { 
     if (err) return next(err);
-    res.redirect('/forgot');
+    res.redirect('users/forgot');
+  });
+});
+
+//from email token 
+router.get('/reset/:token', function(req, res) {
+  User.findOne({ resetPasswordToken: req.params.token, resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+    if (!user) {
+      req.flash('error', 'Password reset token is invalid or has expired.');
+      return res.redirect('/');
+    }
+    res.render('reset');
   });
 });
  
-router.post('/reset', function (req, res) {
-    
-    
-    var password = req.body.password;
-    var confirm = req.body.confirm;
-    if (password !== confirm) return res.end('passwords do not match');
-    
-    // update the user db here 
-   
-    res.end('password reset');
+router.post('/reset/:token', function(req, res) {
+  async.waterfall([
+    function(done) {
+      User.findOne({ resetPasswordToken: req.params.token, 
+        resetPasswordExpires: { $gt: Date.now() } }, function(err, user) {
+        if (!user) {
+          req.flash('error', 'Password reset token is invalid or has expired.');
+          return res.redirect('/users/reset');
+        }
+
+        //log in if token expired ?
+        user.password = req.body.password;
+        user.resetPasswordToken = undefined; // undefined because is unique
+        user.resetPasswordExpires = undefined;
+
+        req.checkBody('password', 'Password is required').notEmpty();
+        req.checkBody('password2', 'Password confirm is required').notEmpty();
+        req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
+
+        var errors = req.validationErrors();
+
+        if(errors){
+          res.render('reset',{
+            errors:errors
+          });
+        }
+
+        user.save(function(err) {
+          req.logIn(user, function(err) {
+            done(err, user);
+          });
+        });
+      });
+    },
+    function(user, done) {
+      var transport = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD              //plain 
+      }
+    });
+      var mailOptions = {
+        to: user.email,
+        from: 'passwordreset@demo.com',
+        subject: 'Your password has been changed',
+        text: 'Hello,\n\n' +
+          'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+      };
+      transport.sendMail(mailOptions, function(err) {
+        req.flash('success_msg', 'Success! Your password has been changed.');
+        done(err);
+      });
+    }
+  ], function(err) {
+    res.redirect('/');
+  });
+});
+
+router.post('/profile', upload.single('pic'), function(req, res, next) {
+
+var pic = req.file.filename;
+
+User.update({
+  username: req.user.username
+}, {
+  $set: { 
+    "picture" : pic
+  }
+}, function (err, user) {
+    if (err) throw error;
+    res.redirect('/');
 });
 
 
+});
+
+function ensureAuthenticated(req, res, next){
+  if(req.isAuthenticated()){
+    return next();
+  } else {
+    res.redirect('/users/login');
+  }
+}
+
 router.get('/logout', function(req, res){
 	req.logout();
-
-	req.flash('success_msg', 'You are logged out');
 
 	res.redirect('/users/login');
 });
