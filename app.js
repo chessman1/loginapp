@@ -11,8 +11,71 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
+var client = require('socket.io').listen(4000).sockets;
 
-mongoose.connect('mongodb://localhost/loginapp', { useMongoClient: true });
+mongoose.connect('mongodb://localhost/loginapp', { useMongoClient: true }, 
+  function (err, db) {
+
+    // Connect to Socket.io
+    client.on('connection', function(socket){
+        var user = db.collection('users');
+
+        // Create function to send status
+        sendStatus = function(s){
+            socket.emit('status', s);
+        }
+
+        // Get chats from mongo collection
+        user.find().limit(100).sort({_id:1}).toArray(function(err, res){
+            if(err){
+                throw err;
+            }
+
+            // Emit the messages
+            socket.emit('output', res);
+        });
+
+        // Handle input events
+        socket.on('input', function(data){
+            var name = data.name;
+            var message = data.message;
+
+            // Check for name and message
+            if(name == '' || message == ''){
+                // Send error status
+                sendStatus('Please enter a name and message');
+            } else {
+                // Insert message
+                user.insert({name: name, message: message}, function(){
+                    client.emit('output', [data]);
+
+                    // Send status object
+                    sendStatus({
+                        message: 'Message sent',
+                        clear: true
+                    });
+                });
+            }
+        });
+
+        // Handle clear
+        socket.on('clear', function(data){
+            // Remove all chats from collection
+
+            user.remove({"name" : {
+              $regex : "[0-9aA-zZ]"
+              }
+            }, function(){
+                // Emit cleared
+                socket.emit('cleared');
+            });
+        });
+    });
+
+
+});
+
+
 var db = mongoose.connection;
 
 var routes = require('./routes/index');

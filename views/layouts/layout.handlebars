@@ -6,7 +6,10 @@
 	<link rel="stylesheet" href="/css/bootstrap.css" />
   <link rel="stylesheet" href="/css/main.css" />
 <script src="/js/handlebars.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js">
+</script>
 </head>
+
 <body>
 
 
@@ -19,7 +22,7 @@
       
             
               <li role="presentation"><a href="/users/homepage">Homepage</a></li>
-              <li role="presentation"><a href="/users/reset">New password</a></li> 
+              <li role="presentation"><a href="/users/chat">Chat</a></li> 
               <li role="presentation"><a href="/users/logout">Logout</a></li>
             {{else}}
               <li role="presentation"><a href="/users/login">Login</a></li>

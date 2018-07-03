@@ -30,8 +30,10 @@ var FACEBOOK_APP_SECRET = '7365159e1cff7f5cccbb98d30e6cb6be';
 var User = require('../models/user');
 
 
-
 //no address some page not found with picture
+
+
+
 
 
 // Get Homepage
@@ -57,8 +59,8 @@ router.get('/forgot', function(req, res) {
 });
 
 //Reset
-router.get('/reset', ensureAuthenticated, function(req, res) {
-  res.render('reset');
+router.get('/chat', function(req, res) {
+  res.render('chat');
 });
 
 
@@ -88,7 +90,6 @@ router.post('/register', function(req, res){
 			email: email,
 			password: password,
 		});
-
 
 		user.save(function(err) {
     req.logIn(user, function(err) {
@@ -212,8 +213,8 @@ router.post('/', function (req, res, next) {
     var transport = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD                
+        user: 'chesslebron1@gmail.com',
+        pass: 'trewq123'                
       }
     });
     
@@ -287,8 +288,8 @@ router.post('/reset/:token', function(req, res) {
       var transport = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD              
+        user: 'chesslebron1@gmail.com',
+        pass: 'trewq123'            
       }
     });
       var mailOptions = {

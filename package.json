@@ -28,6 +28,7 @@
     "passport-facebook": "^2.1.1",
     "passport-http": "*",
     "passport-local": "*",
+    "socket.io": "^2.1.1",
     "xoauth2": "^1.2.0"
   }
 }

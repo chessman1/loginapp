@@ -3,3 +3,14 @@
     top: 50px;
     left: 950px;
 }
+
+#upload {
+    position: relative;
+    top: 210px;
+    left: 950px;
+}
+
+#messages {
+    height: 300px;
+    border: 1px solid;
+}
