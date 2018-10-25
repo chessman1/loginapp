@@ -1,1 +1,4 @@
-
+This is an application with registering users. I use MongoDB. A registered user can change his/her profile picture. 
+There is an option to log in with Facebook profile. The user has options to change his/her password. There are 
+simple instructions how to change password. There are confirmation emails and other easy steps. The app is responsive.
+I have tested the app in website which tests responsive design. Also I have idea to develop other features. 
