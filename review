@@ -1,4 +1,20 @@
+                                                Review
+
 This is an application with registering users. I use MongoDB. A registered user can change his/her profile picture. 
 There is an option to log in with Facebook profile. The user has options to change his/her password. There are 
-simple instructions how to change password. There are confirmation emails and other easy steps. The app is responsive.
+simple instructions how to change password. There are confirmation emails and other easy steps. There is chat. Two registered users
+can chat each other. The chat is made with socket.io. The app is responsive.
 I have tested the app in website which tests responsive design. Also I have idea to develop other features. 
+
+I use Express.js framework and similar technologies. The FE part is made with HTML, CSS. I have an idea to develop FE part with
+Vue.js framework. Bootstrap 4 is used for responsive design. BE part is made with Node.js. I wanted to be the same language
+on both FE and BE. The feature which is valuable is that the user can log in with FB. It can be with other social websites. The
+method is the same. There is special website for developers for the current social website. For example FB has website for 
+developers and there are keys which are copied in the source code. There is good documentation about it. The thing I like is 
+to learn good practices. For example when user add picture, there is a folder upload which saves pictures. The path to picture
+is saved on MongoDB. I use handlebars for template engine. I have main layout which applies to the app. There are some simple 
+features which can be made with similar technologies.
+
+
+
+
